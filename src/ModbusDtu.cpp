@@ -120,7 +120,7 @@ void ModbusDtuClass::loop()
     } else {
         float value;
         uint16_t *hexbytes = reinterpret_cast<uint16_t *>(&value);
-        value = (Datastore.getTotalAcPowerEnabled()*-1);
+        value = Datastore.getTotalAcPowerEnabled();
         // MessageOutput.printf("Modbus: write %.2f to 40097 and 40098\r\n", value);
         mb.Hreg(0x9ca1, hexbytes[1]);
         mb.Hreg(0x9ca2, hexbytes[0]);
@@ -142,12 +142,15 @@ void ModbusDtuClass::loop()
                         mb.Hreg(0x9c87, hexbytes[1]);
                         mb.Hreg(0x9c88, hexbytes[0]);
                         value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1) != 0 ? inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1) : inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC)));
+                        value *= -1;
                         mb.Hreg(0x9c89, hexbytes[1]);
                         mb.Hreg(0x9c8a, hexbytes[0]);
                         value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_2));
+                        value *= -1;
                         mb.Hreg(0x9c8b, hexbytes[1]);
                         mb.Hreg(0x9c8c, hexbytes[0]);
                         value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_3));
+                        value *= -1;
                         mb.Hreg(0x9c8d, hexbytes[1]);
                         mb.Hreg(0x9c8e, hexbytes[0]);
                         value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_1N));
@@ -180,13 +183,13 @@ void ModbusDtuClass::loop()
                         // value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_PAC)*-1); //done above already!
                         // mb.Hreg(0x9ca1, hexbytes[1]); //done above already!
                         // mb.Hreg(0x9ca2, hexbytes[0]); //done above already!
-                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1) != 0) ? ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_1N)) *-1) : ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC)) *-1));
+                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1) != 0) ? ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_1)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_1N))) : ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC))));
                         mb.Hreg(0x9ca3, hexbytes[1]);
                         mb.Hreg(0x9ca4, hexbytes[0]);
-                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_2)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_2N)) *-1);
+                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_2)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_2N)));
                         mb.Hreg(0x9ca5, hexbytes[1]);
                         mb.Hreg(0x9ca6, hexbytes[0]);
-                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_3)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_3N)) *-1);
+                        value = ((inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_IAC_3)) * (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_UAC_3N)));
                         mb.Hreg(0x9ca7, hexbytes[1]);
                         mb.Hreg(0x9ca8, hexbytes[0]);
                         // mb.Hreg(0x9ca9, 0);
@@ -209,12 +212,19 @@ void ModbusDtuClass::loop()
                         value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_PF));
                         mb.Hreg(0x9cb9, hexbytes[1]);
                         mb.Hreg(0x9cba, hexbytes[0]);
-                        // mb.Hreg(0x9cbb, 0);
-                        // mb.Hreg(0x9cbc, 0);
-                        // mb.Hreg(0x9cbd, 0);
-                        // mb.Hreg(0x9cbe, 0);
-                        // mb.Hreg(0x9cbf, 0);
-                        // mb.Hreg(0x9cc0, 0);
+
+                        // PF L1
+                        mb.Hreg(0x9cbb, hexbytes[1]);
+                        mb.Hreg(0x9cbc, hexbytes[0]);
+
+                        // PF L2
+                        mb.Hreg(0x9cbd, hexbytes[1]);
+                        mb.Hreg(0x9cbe, hexbytes[0]);
+
+                        // PF L3
+                        mb.Hreg(0x9cbf, hexbytes[1]);
+                        mb.Hreg(0x9cc0, hexbytes
+                            [0]);
                         // value = (inv->Statistics()->getChannelFieldValue(TYPE_AC, CH0, FLD_YT)*1000); //done above already!
                         // if (value > _lasttotal) {
                             // _lasttotal = value;
